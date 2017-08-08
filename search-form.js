@@ -25,7 +25,7 @@
     div.appendChild(fir_form);
       
 //      constructions as follows
-//        <div class = 'menu-dashboard'>
+//        <div class = 'main'>
 //           <form>
 //            <div class = 'form-group'>
 //                <input></input>

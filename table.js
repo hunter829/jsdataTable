@@ -19,9 +19,9 @@
         tr = document.createElement('tr');
         tr.classList.add('table-row-headings');
         tr.classList.add('table-row-data');
-        tableLength = tableHead.length;
+        tableLen = tableHead.length;
         
-        for(let i=0;i<tableLength;i++){
+        for(let i=0;i<tableLen;i++){
             th = document.createElement('th');
             console.log(tableHead[i].title);
             th.classList.add(`${tableHead[i].key}-heading`, 'row-headings');
@@ -31,13 +31,17 @@
             th.onclick = function(event,key){
                sortDatabyClick(event,tableHead[i].key); 
             };
-            inputs = document.getElementsByClassName('data-toggle');
-            const inputsLength = inputs.length;
             
-            for(let i=0;i<inputsLength;i++){
+            if (sortKey === tableHead[i].key && sortClass) {
+                th.classList.add(sortClass);
+            }
+            inputs = document.getElementsByClassName('data-toggle');
+            const inputsLen = inputs.length;
+            
+            for(let i=0;i<inputsLen;i++){
                 inputs[i].checked = true;
                 inputs[i].onclick = (event,key) =>{
-                    window.toggleDataColumns(event,tableHead[i].key);
+                    window.toggleData(event,tableHead[i].key);
                 }
             }
             
@@ -49,8 +53,8 @@
     // pageList show in the front end
     const createPageList = (data) =>{
         let count = 1;
-        const dataLength = data.length;
-        for(let i=0;i<dataLength;i+pageRow){
+        const dataLen = data.length;
+        for(let i=0;i<dataLen;i+pageRow){
             pageList[count] = data.slice(i,i+=pageRow);
             count++;
         }
@@ -61,10 +65,10 @@
     const createPageListTable = (data,pageListKey=1) =>{
         const curList = data[pageListKey];
         console.log(curList);
-        const curListLength = curList.length;
-        console.log(curListLength);
+        const curListLen = curList.length;
+        console.log(curListLen);
 
-        for(let i=0;i<curListLength;i++){
+        for(let i=0;i<curListLen;i++){
             tr = document.createElement('tr');
             tr.classList.add('table-row-data', `key-${pageListKey}`, `row-${i+1}`);
             for(let key in curList[i]){
@@ -83,10 +87,12 @@
         
     };
     
+    //create the table, get the data on every page and then load the data
     const CreateTable = (data) => {
         const pageListAlready = createPageList(data);
         createPageListTable(pageListAlready);
     };
+    
     const fillTable = (jsonData)=>{
         if(jsonData.length<=100){
             CreateTable(jsonData);
@@ -94,11 +100,9 @@
         else {
           let ajax = new XMLHttpRequest();
           ajax.addEventListener("load", CreateTableWithApi);
-          ajax.open("GET", "https://example.com/sampleData");
+          ajax.open("GET", "https://www.example.com/sampleData");
           ajax.send();
         }
-
-        
     };
     
     const clearTableData = () => {
@@ -113,7 +117,7 @@
         clearTableData();
         
         if(heading.classList.contains('ascending')){
-            createTableHeading(key, 'descending');
+            createTableHead(key, 'descending');
             CreateTable(sortDataDesc(key,jsonData));
         }else{
             createTableHead(key, 'ascending');
@@ -138,10 +142,10 @@
         return span;
     };
     
-    const TableControlPageBtns = (tableLength) =>{
+    const TableControlPageBtns = (tableLen) =>{
         span = document.createElement('span');
         let count = 1,pageNum;
-        for(let i=0;i<tableLength;i+pageRow){
+        for(let i=0;i<tableLen;i+pageRow){
             btn = document.createElement('button');
             btn.classList.add('table-controls-pages',`page-${count}`);
             btn.appendChild(document.createTextNode(count));
@@ -168,12 +172,12 @@
         return span;
     };
     
-    const pageBtnsInit = (tableLength) =>{
+    const pageBtnsInit = (tableLen) =>{
         const firstPageButton = document.getElementsByClassName('page-1')[0];
         firstPageButton.classList.add('table-controls-pages--active');
         const previousButton = document.getElementsByClassName('table-controls-previous')[0];
         
-        if(tableLength <= pageRow){
+        if(tableLen <= pageRow){
             const nextButton = document.getElementsByClassName('table-control-next')[0];
         }
     };
@@ -185,12 +189,12 @@
         resetForm();
          
         if(!pageButton.classList.contains('table-controls-pages--active')){
-            const allPageBtnsLength = allPageBtns.length;
+            const allPageBtnsLen = allPageBtns.length;
             
-            for(let i=0;i<allPageBtnsLength;i++){
+            for(let i=0;i<allPageBtnsLen;i++){
                 allPageBtns[i].classList.remove('table-controls-pages--active');
             }
-            hidePrevAndNextBtns(pageNumber, allPageBtnsLength);
+            hidePrevAndNextBtns(pageNumber, allPageBtnsLen);
               pageButton.classList.add('table-controls-pages--active');
               clearTableData();
               createTableHead();
@@ -199,7 +203,7 @@
     }
     
 
-    const setTableControls = (tableLength) => {
+    const setTableControls = (tableLen) => {
         const tableControls = document.getElementsByClassName('table-controls-bar')[0];
         
         if(tableControls !== undefined){
@@ -215,7 +219,7 @@
                     span = buildPrevPageBtns();
                     div.appendChild(span);
 
-                    span = TableControlPageBtns(tableLength)
+                    span = TableControlPageBtns(tableLen)
                     div.appendChild(span);
 
                     span = buildNextPageBtns();
@@ -223,7 +227,7 @@
                 div_row.appendChild(div);
             body.appendChild(div_row);
         
-        pageBtnsInit(tableLength);
+        pageBtnsInit(tableLen);
         
         
     };
